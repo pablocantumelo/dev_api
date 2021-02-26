@@ -25,7 +25,7 @@ List_Dev = [{'id':0,'nome':'Pablo',
 ##---------------------------------------##
 # altera dados de um dev atraves do ID
 ##---------------------------------------##
-class desenvolvedor(Resource):
+class Desenvolvedor(Resource):
     def get(self,id):
         try:
             response = List_Dev[id]
@@ -64,13 +64,38 @@ class ListaDevs(Resource):
         return (List_Dev[posicao])
 
 ##-----------------------------##
+#      Inclusão de Habilidades
+##-----------------------------##
+class IncHabilidade(Resource):
+    def post(self,id,hab):
+        dev_dados = List_Dev[id]  # pego o dict do dev
+        inc_h = dev_dados['habilidades']  # pego as habilidades
+        incluir = 1
+        for i in inc_h:
+            if hab == i:
+                incluir = 0
+                msg = 'Habiliade já existe'
+                break
+        if incluir:
+            inc_h.append(hab)  # incluo a nova habilidade
+            List_Dev[id].update({"habilidades": inc_h})
+            msg = 'sucesso inc habilidade'
+
+        return (msg)
+
+
+##-----------------------------##
 #      Rotas Implementadas
 ##-----------------------------##
-api.add_resource(desenvolvedor,'/dev/<int:id>/')
+api.add_resource(Desenvolvedor,'/dev/<int:id>/')
 api.add_resource(ListaDevs,'/dev/')
+api.add_resource(IncHabilidade,'/dev/<int:id>/<hab>/')
 
 ##---------------------------------------##
 #  Só executar se chamar por ele mesmo
 ##---------------------------------------##
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
