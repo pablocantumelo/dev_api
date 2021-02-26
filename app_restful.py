@@ -83,6 +83,38 @@ class IncHabilidade(Resource):
 
         return (msg)
 
+    def delete(self, id, hab):
+        try:
+            dev_dados = List_Dev[id]
+        except IndexError:
+            msg_ret = {'status': 'erro', 'mensagem': 'Desenvolvedor de ID {} não existe'.format(id)}
+        except Exception:
+            msg_ret = {'status': 'erro', 'mensagem': 'Erro Desconhecido'}
+        else:
+            inc_h = dev_dados['habilidades']  # pego as habilidades
+            for i in inc_h:
+                if hab == i:
+                    pos = inc_h.index(i)
+                    break
+            try:
+                inc_h.pop(pos)
+            except UnboundLocalError:
+                msg_ret = "A habilidade {} nao existe para o ID {}".format(hab, id)
+            else:
+                List_Dev[id].update({"habilidades": inc_h})
+                msg_ret = "A habilidade {} foi excluida para o ID {}".format(hab, id)
+        return (msg_ret)
+
+class HabilidadesTodas(Resource):
+    def get(self):
+        HabTotal = []
+        for i in List_Dev:
+            hab_list = i['habilidades']
+            for x in hab_list:
+                HabTotal.append(x)
+            x = set(HabTotal)
+            HabTotal = list(x)
+        return HabTotal
 
 ##-----------------------------##
 #      Rotas Implementadas
@@ -90,6 +122,9 @@ class IncHabilidade(Resource):
 api.add_resource(Desenvolvedor,'/dev/<int:id>/')
 api.add_resource(ListaDevs,'/dev/')
 api.add_resource(IncHabilidade,'/dev/<int:id>/<hab>/')
+api.add_resource(HabilidadesTodas,'/dev/hab/')
+
+
 
 ##---------------------------------------##
 #  Só executar se chamar por ele mesmo
